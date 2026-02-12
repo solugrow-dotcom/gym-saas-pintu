@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "full-deploy": "npm run build && .\\DEPLOY_NOW.bat"
   },
   "dependencies": {
     "@insforge/sdk": "^1.1.5",
