@@ -34,13 +34,14 @@ export default function ChoosePlanPage() {
         }
     ]
 
-    const handleSelect = async (planName) => {
+    const handleSelect = async (planName: string) => {
         setLoading(true)
         try {
             await createSubscription({ gymId, plan: planName })
             router.push(`/payment?gymId=${gymId}&plan=${planName}`)
-        } catch (err) {
-            alert(err.message)
+        } catch (err: any) {
+            console.error('Subscription error:', err)
+            alert(err.message || 'An error occurred during subscription activation.')
             setLoading(false)
         }
     }

@@ -5,9 +5,9 @@ import { supabase } from '@/lib/supabase'
 import { recordPayment } from '@/lib/actions'
 
 export default function PaymentsPage() {
-    const [members, setMembers] = useState([])
-    const [history, setHistory] = useState([])
-    const [gym, setGym] = useState(null)
+    const [members, setMembers] = useState<any[]>([])
+    const [history, setHistory] = useState<any[]>([])
+    const [gym, setGym] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [amount, setAmount] = useState('')
     const [method, setMethod] = useState('cash')
@@ -33,15 +33,15 @@ export default function PaymentsPage() {
         fetchData()
     }, [])
 
-    const handlePay = async (memberId) => {
-        if (!amount || amount <= 0) return alert('Invalid amount')
+    const handlePay = async (memberId: string) => {
+        if (!amount || Number(amount) <= 0) return alert('Invalid amount')
         try {
             const p = await recordPayment({ memberId, gymId: gym.id, amount: Number(amount), method })
             const member = members.find(m => m.id === memberId)
             setHistory([{ ...p, members: { name: member.name } }, ...history])
             setAmount('')
             alert('Financial transaction verified.')
-        } catch (err) { alert(err.message) }
+        } catch (err: any) { alert(err.message) }
     }
 
     if (loading) return <div>Syncing Ledger...</div>

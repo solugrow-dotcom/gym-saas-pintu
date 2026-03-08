@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 
 export default function SuperAdminDashboard() {
     const [stats, setStats] = useState({ gyms: 0, members: 0, payments: 0, revenue: 0 })
-    const [revenueData, setRevenueData] = useState([])
+    const [revenueData, setRevenueData] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -18,9 +18,11 @@ export default function SuperAdminDashboard() {
 
                 const totalRevenue = payments?.reduce((acc, p) => acc + Number(p.amount), 0) || 0
 
-                // Mocking monthly chart data based on last 6 months
                 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
-                const mockRevenue = months.map((m, i) => ({ month: m, amount: (totalRevenue / 6) * (0.8 + Math.random() * 0.4) }))
+                const mockRevenue = months.map((m, i) => ({
+                    month: m,
+                    amount: (totalRevenue / 6) * (0.8 + Math.random() * 0.4)
+                }))
                 setRevenueData(mockRevenue)
 
                 setStats({
@@ -29,7 +31,7 @@ export default function SuperAdminDashboard() {
                     payments: payCount || 0,
                     revenue: totalRevenue
                 })
-            } catch (err) {
+            } catch (err: any) {
                 console.error(err)
             } finally {
                 setLoading(false)
@@ -38,73 +40,93 @@ export default function SuperAdminDashboard() {
         fetchStats()
     }, [])
 
-    if (loading) return <div className="p-8 text-center text-gray-500 font-black uppercase tracking-widest animate-pulse font-sans">Crunching Global Data...</div>
+    if (loading) return (
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-primary space-y-4">
+            <span className="animate-spin material-symbols-outlined text-6xl">progress_activity</span>
+            <p className="font-black uppercase tracking-[0.5em] text-xs">Synchronizing Intelligence...</p>
+        </div>
+    )
 
     return (
-        <div>
-            <header className="mb-16">
-                <h1 className="text-6xl font-black text-gray-900 tracking-tighter uppercase underline decoration-blue-600 decoration-[16px] underline-offset-8">Global Control</h1>
-                <p className="text-gray-400 font-bold uppercase text-xs tracking-[0.4em] mt-6 ml-2 italic">Platform-Wide Analytics & Infrastructure Monitoring</p>
+        <div className="space-y-12 pb-20">
+            <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <h1 className="text-5xl font-black text-white italic tracking-tighter uppercase leading-none">Global <span className="text-primary">Control</span></h1>
+                    <p className="text-slate-500 font-bold uppercase text-[10px] tracking-[0.4em] mt-4 ml-1">Infrastructure Monitoring • SoluGrow SaaS</p>
+                </div>
+                <div className="flex gap-3">
+                    <button className="glass px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all outline-none border-white/5">Export Audit</button>
+                    <button className="bg-primary px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">System Scan</button>
+                </div>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                 {[
-                    { label: 'Licensed Gyms', value: stats.gyms, color: 'blue', desc: 'Active instances' },
-                    { label: 'Total Members', value: stats.members, color: 'indigo', desc: 'Global users' },
-                    { label: 'Transactions', value: stats.payments, color: 'purple', desc: 'Billing nodes' },
-                    { label: 'Gross Revenue', value: `$${stats.revenue.toLocaleString()}`, color: 'green', desc: 'Projected growth' }
+                    { label: 'Licensed Gyms', value: stats.gyms, icon: 'location_city', desc: 'Active instances' },
+                    { label: 'Total Members', value: stats.members.toLocaleString(), icon: 'group', desc: 'Global users' },
+                    { label: 'Transactions', value: stats.payments, icon: 'receipt_long', desc: 'Billing nodes' },
+                    { label: 'Gross Revenue', value: `₹${stats.revenue.toLocaleString()}`, icon: 'payments', desc: 'Network growth' }
                 ].map((stat, i) => (
-                    <div key={i} className="bg-white p-12 rounded-[4rem] shadow-2xl border border-gray-100 transition-all hover:shadow-blue-50 hover:translate-y-[-10px] relative overflow-hidden group">
-                        <div className={`absolute top-0 right-0 w-32 h-32 bg-${stat.color}-50 rounded-bl-full opacity-40 transition-all group-hover:scale-110`}></div>
-                        <p className={`text-${stat.color}-600 font-black uppercase text-[10px] tracking-[0.3em] mb-4 relative z-10`}>{stat.label}</p>
-                        <p className="text-7xl font-black text-gray-900 tracking-tighter mb-2 relative z-10">{stat.value}</p>
-                        <p className="text-gray-300 font-bold text-xs uppercase tracking-widest relative z-10">{stat.desc}</p>
+                    <div key={i} className="glass p-10 rounded-[2.5rem] border-white/5 group hover:border-primary/50 transition-all relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                            <span className="material-symbols-outlined text-7xl text-primary">{stat.icon}</span>
+                        </div>
+                        <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.3em] mb-4">{stat.label}</p>
+                        <p className="text-5xl font-black text-white italic tracking-tighter mb-2">{stat.value}</p>
+                        <p className="text-slate-600 font-bold text-[10px] uppercase tracking-widest">{stat.desc}</p>
                     </div>
                 ))}
             </div>
 
-            <section className="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-12">
-                <div className="lg:col-span-2 bg-gray-900 p-16 rounded-[4.5rem] shadow-3xl text-white outline outline-1 outline-gray-800">
-                    <div className="flex justify-between items-center mb-12">
-                        <h2 className="text-4xl font-black tracking-tighter uppercase">Revenue Velocity</h2>
-                        <span className="text-[10px] font-black text-blue-400 border border-blue-400 px-4 py-1.5 rounded-full uppercase tracking-widest">Growth Vector</span>
+            <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 glass p-10 lg:p-12 rounded-[3.5rem] border-white/5 relative overflow-hidden">
+                    <div className="flex justify-between items-center mb-16">
+                        <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">Revenue <span className="text-primary">Velocity</span></h2>
+                        <div className="flex items-center gap-2">
+                            <span className="size-2 bg-green-500 rounded-full animate-pulse"></span>
+                            <span className="text-[10px] font-black text-green-400 uppercase tracking-widest">Real-time sync</span>
+                        </div>
                     </div>
 
-                    <div className="flex items-end justify-between h-64 gap-6 px-4">
+                    <div className="flex items-end justify-between h-72 gap-4 lg:gap-8 px-2 lg:px-6">
                         {revenueData.map((d, i) => (
-                            <div key={i} className="flex-1 flex flex-col items-center gap-4 group">
+                            <div key={i} className="flex-1 flex flex-col items-center gap-6 group">
                                 <div
-                                    className="w-full bg-blue-600 rounded-2xl transition-all duration-500 shadow-lg shadow-blue-500/20 group-hover:bg-blue-400 group-hover:scale-105"
+                                    className="w-full bg-primary/20 rounded-2xl transition-all duration-700 group-hover:bg-primary group-hover:shadow-[0_0_30px_rgba(236,91,19,0.3)]"
                                     style={{ height: `${(d.amount / (stats.revenue / 4)) * 100}%`, minHeight: '10%' }}
                                 ></div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 group-hover:text-white transition">{d.month}</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 group-hover:text-white transition">{d.month}</p>
                             </div>
                         ))}
                     </div>
-                    <div className="mt-12 pt-12 border-t border-gray-800 flex justify-around">
+
+                    <div className="mt-16 pt-12 border-t border-white/5 flex justify-around">
                         <div className="text-center">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-1">Stability</p>
-                            <p className="text-xl font-black">99.98%</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-2">Network Stability</p>
+                            <p className="text-3xl font-black text-white italic">99.98%</p>
                         </div>
                         <div className="text-center">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-1">Growth</p>
-                            <p className="text-xl font-black">+14.2%</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-2">Growth Vector</p>
+                            <p className="text-3xl font-black text-white italic">+14.2%</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white p-12 rounded-[4.5rem] shadow-2xl border border-gray-100 flex flex-col justify-center text-center">
-                    <p className="text-[10px] font-black uppercase text-gray-400 tracking-[0.4em] mb-4">Core Alert Status</p>
-                    <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <div className="w-12 h-12 bg-green-500 rounded-full animate-ping opacity-20"></div>
-                        <div className="w-12 h-12 bg-green-500 rounded-full absolute flex items-center justify-center text-white font-black">✓</div>
+                <div className="flex flex-col gap-8">
+                    <div className="glass p-12 rounded-[3.5rem] border-white/5 flex flex-col items-center text-center justify-center flex-1">
+                        <div className="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center mb-8 relative">
+                            <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-10"></div>
+                            <span className="material-symbols-outlined text-green-500 text-5xl">verified</span>
+                        </div>
+                        <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter mb-2">System Nominal</h3>
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">Global Heartbeat Verified</p>
                     </div>
-                    <p className="text-2xl font-black text-gray-900 tracking-tight">System Nominal</p>
-                    <p className="text-xs text-gray-400 font-bold mt-2 uppercase tracking-widest">Global heartbeats verified</p>
 
-                    <button className="mt-12 p-5 bg-gray-50 text-gray-400 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-100 transition shadow-sm">
-                        Initiate Platform Audit
-                    </button>
+                    <div className="glass p-12 rounded-[3.5rem] border-white/5 group hover:border-primary/30 transition-all flex flex-col items-center text-center justify-center cursor-pointer">
+                        <span className="material-symbols-outlined text-primary text-5xl mb-6 animate-float-slow">security</span>
+                        <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">Initiate Audit</h3>
+                        <p className="text-[10px] text-slate-500 font-bold uppercase mt-2 tracking-widest">Full Platform Integrity Check</p>
+                    </div>
                 </div>
             </section>
         </div>

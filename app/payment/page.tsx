@@ -20,7 +20,7 @@ export default function PaymentPage() {
             setTimeout(() => {
                 router.push('/gym_admin_dashboard')
             }, 2000)
-        } catch (err) {
+        } catch (err: any) {
             alert(err.message)
             setLoading(false)
         }

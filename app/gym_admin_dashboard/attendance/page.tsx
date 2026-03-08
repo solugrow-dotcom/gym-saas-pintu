@@ -5,9 +5,9 @@ import { supabase } from '@/lib/supabase'
 import { recordAttendance } from '@/lib/actions'
 
 export default function AttendancePage() {
-    const [members, setMembers] = useState([])
-    const [history, setHistory] = useState([])
-    const [gym, setGym] = useState(null)
+    const [members, setMembers] = useState<any[]>([])
+    const [history, setHistory] = useState<any[]>([])
+    const [gym, setGym] = useState<any>(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -33,13 +33,13 @@ export default function AttendancePage() {
         fetchData()
     }, [])
 
-    const handleMark = async (memberId) => {
+    const handleMark = async (memberId: string) => {
         try {
             const entry = await recordAttendance({ memberId, gymId: gym.id })
             const member = members.find(m => m.id === memberId)
             setHistory([{ ...entry, members: { name: member.name } }, ...history])
             alert('Node access synchronized successfully.')
-        } catch (err) { alert(err.message) }
+        } catch (err: any) { alert(err.message) }
     }
 
     if (loading) return <div>Synchronizing Timeline...</div>

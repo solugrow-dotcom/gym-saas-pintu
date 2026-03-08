@@ -5,8 +5,8 @@ import { supabase } from '@/lib/supabase'
 import { addMember, updateMember, deleteMember } from '@/lib/actions'
 
 export default function MembersPage() {
-    const [members, setMembers] = useState([])
-    const [gym, setGym] = useState(null)
+    const [members, setMembers] = useState<any[]>([])
+    const [gym, setGym] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [showAdd, setShowAdd] = useState(false)
     const [newMember, setNewMember] = useState({ name: '', email: '', phone: '', plan: 'Monthly' })
@@ -27,7 +27,7 @@ export default function MembersPage() {
         fetchData()
     }, [])
 
-    const handleAdd = async (e) => {
+    const handleAdd = async (e: any) => {
         e.preventDefault()
         try {
             const m = await addMember({
@@ -40,15 +40,15 @@ export default function MembersPage() {
             setMembers([m, ...members])
             setShowAdd(false)
             setNewMember({ name: '', email: '', phone: '', plan: 'Monthly' })
-        } catch (err) { alert(err.message) }
+        } catch (err: any) { alert(err.message) }
     }
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (id: string) => {
         if (!confirm('Are you sure?')) return
         try {
             await deleteMember(id)
             setMembers(members.filter(m => m.id !== id))
-        } catch (err) { alert(err.message) }
+        } catch (err: any) { alert(err.message) }
     }
 
     if (loading) return <div>Syncing Members...</div>
